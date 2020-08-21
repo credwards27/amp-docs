@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+
+#
+# Starts, stops, or restarts the AMP stack
+#
+# To configure, set the $AMP_SERVICES to a space-separated list of packages
+# available to the 'brew services <package>' command.
+#
+# Usage: amp <action> [...<service-id>]
+#
+
+# Starts, stops, or restarts the AMP stack
+function amp() {
+    # Check for global configuration
+    if [[ -z "${AMP_SERVICES}" ]]; then
+        printf \
+"No available services configured, set the \$AMP_SERVICES shell variable to a\n"
+        printf \
+"space-separated list of packages available to the 'brew services <package>'\n"
+        printf \
+"command\n\n"
+        
+        return 2
+    fi
+    
+    local ACTION="${1}"
+    local SERVICE=("${@:2}")
+    
+    local ACTIONS=("start" "stop" "restart")
+    local SERVICES=($AMP_SERVICES)
+    local ALL_SERVICES=("" "${SERVICES[@]}")
+    local VALID_SERVICES=""
+    local INVALID_SERVICES=""
+    
+    # Validate action
+    if [[ 0 -eq $(__validateArg "${ACTION}" ACTIONS) ]]; then
+        if [[ -z "${ACTION}" ]]; then
+            printf "No action specified\n\n"
+        else
+            printf "Invalid action '${ACTION}'\n\n"
+        fi
+        
+        printf "Usage: amp <action> [...<service-id>]\n\n"
+        printf "Available actions:\n"
+        
+        __printList ACTIONS "    "
+        
+        printf "\n"
+        printf "Available services:\n"
+        
+        __printList SERVICES "    "
+        
+        printf "\n"
+        
+        return 1
+    fi
+    
+    # Validate specified service(s)
+    for i in "${SERVICE[@]}"; do
+        if [[ 0 -ne $(__validateArg "${i}" ALL_SERVICES) ]]; then
+            if [[ -z "${VALID_SERVICES}" ]]; then
+                VALID_SERVICES="${i}"
+            else
+                VALID_SERVICES="${VALID_SERVICES} ${i}"
+            fi
+        else
+            if [[ -z "${INVALID_SERVICES}" ]]; then
+                INVALID_SERVICES="${i}"
+            else
+                INVALID_SERVICES="${INVALID_SERVICES} ${i}"
+            fi
+        fi
+    done
+    
+    # List any invalid specified services
+    if [[ -n "${INVALID_SERVICES}" ]]; then
+        INVALID_SERVICES=($INVALID_SERVICES)
+        
+        printf \
+"The following services are not configured in \$AMP_SERVICES and were skipped: \
+\n"
+        __printList INVALID_SERVICES "    "
+        
+        printf "\n"
+    fi
+    
+    # Perform action on all services if none are specified
+    if [[ -z "${VALID_SERVICES}" && -z "${INVALID_SERVICES}" ]]; then
+        # No services specified, run action on all available services
+        VALID_SERVICES="${SERVICES[@]}"
+    fi
+    
+    # Perform action on service(s)
+    VALID_SERVICES=($VALID_SERVICES)
+    
+    for i in "${VALID_SERVICES[@]}"; do
+        brew services "${ACTION}" "${i}"
+    done
+}
+
+# Validates whether or not a string is found in an array of allowed strings
+function __validateArg() {
+    local arg="${1}"
+    local values=$2[@]
+    local values=("${!values}")
+    local valid=0
+    
+    for i in "${values[@]}"; do
+        if [[ "${i}" == "${arg}" ]]; then
+            valid=1
+        fi
+    done
+    
+    echo $valid
+}
+
+# Prints an array of strings in a list with optional indentation
+function __printList() {
+    local list=$1[@]
+    local list=("${!list}")
+    local indent="${2}"
+    
+    if [[ -z "${indent}" ]]; then
+        indent=""
+    fi
+    
+    for i in "${list[@]}"; do
+        printf "%s%s\n" "${indent}" "${i}"
+    done
+}
+
+amp "$@"

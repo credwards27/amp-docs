@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+# Create base configuration directory
+BASE_DIR="${HOME}/amp"
+
+mkdir -p "${BASE_DIR}"
+
+# Link hosts file
+ln /etc/hosts "${BASE_DIR}"
+
+# Link Apache configs
+mkdir -p "${BASE_DIR}/httpd/extra"
+
+ln /usr/local/etc/httpd/httpd.conf "${BASE_DIR}/httpd"
+ln /usr/local/etc/httpd/extra/httpd-vhosts.conf "${BASE_DIR}/httpd/extra"
+
+# Link global mysql config file and data directory
+mkdir -p "${BASE_DIR}/mysql"
+
+ln /usr/local/etc/my.cnf "${BASE_DIR}/mysql"
+ln -s /usr/local/var/mysql "${BASE_DIR}/mysql/db"
+
+# Link PHP 5.6 configs
+mkdir -p "${BASE_DIR}/php/5.6"
+
+ln /usr/local/etc/php/5.6/php.ini "${BASE_DIR}/php/5.6"
+ln /usr/local/etc/php/5.6/php-fpm.conf "${BASE_DIR}/php/5.6"
+ln /usr/local/etc/php/5.6/pear.conf "${BASE_DIR}/php/5.6"
+
+# Link PHP 7.3 configs
+mkdir -p "${BASE_DIR}/php/7.3/php-fpm.d"
+
+ln /usr/local/etc/php/7.3/php.ini "${BASE_DIR}/php/7.3"
+ln /usr/local/etc/php/7.3/php-fpm.d/www.conf "${BASE_DIR}/php/7.3/php-fpm.d"
+ln /usr/local/etc/php/7.3/pear.conf "${BASE_DIR}/php/7.3"
+
+# Link PHP 7.4 configs
+mkdir -p "${BASE_DIR}/php/7.4/php-fpm.d"
+
+ln /usr/local/etc/php/7.4/php.ini "${BASE_DIR}/php/7.4"
+ln /usr/local/etc/php/7.4/php-fpm.d/www.conf "${BASE_DIR}/php/7.4/php-fpm.d"
+ln /usr/local/etc/php/7.4/pear.conf "${BASE_DIR}/php/7.4"
