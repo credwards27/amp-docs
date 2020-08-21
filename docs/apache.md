@@ -14,7 +14,7 @@ Depending on your system configuration, this is sometimes necessary:
 
 ```bash
 sudo mkdir /usr/local/var/run/httpd
-sudo chown -R $(whoami):admin /usr/local/var/run/httpd
+sudo chown -R $(whoami):staff /usr/local/var/run/httpd
 ```
 
 ## Configure
@@ -36,7 +36,7 @@ Group _www
 
 ```bash
 User username
-Group admin
+Group staff
 ```
 
 ### Change:

@@ -17,9 +17,9 @@ brew install php@7.4
 Make sure required directories are writeable:
 
 ```bash
-sudo chown -R $(whoami):admin /usr/local/include/php/
-sudo chown -R $(whoami):admin /usr/local/lib/php/
-sudo chown -R $(whoami):admin /usr/local/etc/php/
+sudo chown -R $(whoami):staff /usr/local/include/php/
+sudo chown -R $(whoami):staff /usr/local/lib/php/
+sudo chown -R $(whoami):staff /usr/local/etc/php/
 ```
 
 Change the default PHP version for the system (change the version number in the `brew link` command if you want to use a different version by default):
@@ -72,7 +72,7 @@ listen = 127.0.0.1:9000
 
 ```bash
 user = username
-group = admin
+group = staff
 
 
 # ...
